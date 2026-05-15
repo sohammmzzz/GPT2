@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 0 — Foundations of a Transformer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:     #07071a;
+  --bg2:    #0e0e2a;
+  --card:   rgba(255,255,255,0.05);
+  --border: rgba(255,255,255,0.09);
+  --i:      #6366f1;
+  --v:      #8b5cf6;
+  --c:      #22d3ee;
+  --g:      #10b981;
+  --a:      #f59e0b;
+  --r:      #f43f5e;
+  --tx:     #e2e8f0;
+  --tx2:    #94a3b8;
+  --tx3:    #475569;
+  --cbg:    #12122b;
+  --kw:     #ff79c6;
+  --st:     #f1fa8c;
+  --cm:     #5a6a8a;
+  --fn:     #50fa7b;
+  --nm:     #bd93f9;
+  --cl:     #8be9fd;
+  --bl:     #ffb86c;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif}
+canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* ── Deck ── */
+#deck{position:fixed;inset:0;z-index:1}
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  padding:40px 60px 90px;
+  transform:translateX(100%);
+  transition:transform .55s cubic-bezier(.77,0,.18,1),opacity .55s;
+  opacity:0;pointer-events:none;
+}
+.slide.active{transform:translateX(0);opacity:1;pointer-events:all}
+.slide.prev{transform:translateX(-100%);opacity:0}
+
+/* ── Nav ── */
+#nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:10;
+  display:flex;align-items:center;gap:16px;padding:14px 32px;
+  background:rgba(7,7,26,.85);backdrop-filter:blur(16px);
+  border-top:1px solid var(--border);
+}
+#progress{flex:1;height:4px;background:var(--border);border-radius:4px;overflow:hidden}
+#bar{height:100%;background:linear-gradient(90deg,var(--i),var(--c));border-radius:4px;transition:width .4s}
+.nav-btn{
+  background:var(--card);border:1px solid var(--border);color:var(--tx);
+  width:38px;height:38px;border-radius:10px;cursor:pointer;font-size:16px;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .2s,border-color .2s;
+}
+.nav-btn:hover{background:rgba(99,102,241,.2);border-color:var(--i)}
+#counter{font-size:12px;color:var(--tx2);min-width:52px;text-align:center;font-variant-numeric:tabular-nums}
+#slide-num{font-size:11px;color:var(--tx3);position:fixed;top:16px;right:24px;z-index:10}
+
+/* ── Type ── */
+.tag{
+  font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--i);background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.3);
+  padding:4px 12px;border-radius:20px;margin-bottom:18px;
+}
+.tag.cyan{color:var(--c);background:rgba(34,211,238,.1);border-color:rgba(34,211,238,.3)}
+.tag.green{color:var(--g);background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.3)}
+.tag.amber{color:var(--a);background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.3)}
+h1{font-size:clamp(2.4rem,5vw,4.2rem);font-weight:900;line-height:1.1;text-align:center;letter-spacing:-.02em}
+h2{font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:800;line-height:1.2;letter-spacing:-.02em}
+h3{font-size:1.25rem;font-weight:700;color:var(--tx)}
+p{font-size:1.05rem;line-height:1.7;color:var(--tx2)}
+.grad{background:linear-gradient(135deg,var(--i),var(--c));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.grad2{background:linear-gradient(135deg,var(--v),var(--a));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* ── Cards ── */
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:24px 28px;
+}
+.cards-row{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;width:100%;max-width:1000px}
+.cards-row .card{flex:1;min-width:220px;max-width:320px}
+
+/* ── Code ── */
+pre{
+  background:var(--cbg);border:1px solid var(--border);border-radius:14px;
+  padding:20px 24px;font-family:'JetBrains Mono',monospace;font-size:.82rem;
+  line-height:1.7;overflow-x:auto;width:100%;max-width:820px;
+  text-align:left;position:relative;
+}
+pre::before{content:attr(data-file);position:absolute;top:10px;right:16px;font-size:10px;color:var(--tx3);letter-spacing:.05em}
+.kw{color:var(--kw)}.st{color:var(--st)}.cm{color:var(--cm);font-style:italic}
+.fn{color:var(--fn)}.nm{color:var(--nm)}.cl{color:var(--cl)}.bl{color:var(--bl)}
+
+/* ── Bullet list ── */
+ul.bullets{list-style:none;display:flex;flex-direction:column;gap:12px;max-width:700px;width:100%}
+ul.bullets li{
+  display:flex;align-items:flex-start;gap:12px;font-size:1rem;color:var(--tx2);line-height:1.55;
+}
+ul.bullets li::before{
+  content:'';display:block;width:8px;height:8px;border-radius:50%;
+  background:linear-gradient(135deg,var(--i),var(--c));flex-shrink:0;margin-top:.4em;
+}
+ul.bullets li strong{color:var(--tx)}
+
+/* ── Diagrams ── */
+.diag{display:flex;flex-direction:column;align-items:center;gap:0;width:100%;max-width:860px}
+.token-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:8px 0}
+.tok{
+  padding:8px 14px;border-radius:8px;font-family:'JetBrains Mono',monospace;
+  font-size:.85rem;font-weight:600;border:1px solid;opacity:0;
+  transition:opacity .4s,transform .4s;transform:translateY(12px);
+}
+.tok.show{opacity:1;transform:translateY(0)}
+.tok.t1{background:rgba(99,102,241,.15);border-color:rgba(99,102,241,.5);color:#a5b4fc}
+.tok.t2{background:rgba(34,211,238,.12);border-color:rgba(34,211,238,.4);color:#67e8f9}
+.tok.t3{background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.4);color:#6ee7b7}
+.tok.t4{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.4);color:#fcd34d}
+.tok.t5{background:rgba(244,63,94,.12);border-color:rgba(244,63,94,.4);color:#fda4af}
+.arrow-down{font-size:1.6rem;color:var(--tx3);margin:4px 0;line-height:1}
+.id-row{display:flex;gap:8px;margin:6px 0}
+.tid{
+  width:48px;text-align:center;padding:6px 0;border-radius:6px;
+  font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:700;
+  background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.4);color:#c4b5fd;
+  opacity:0;transition:opacity .5s;
+}
+.tid.show{opacity:1}
+
+/* ── Sliding window ── */
+#win-seq{display:flex;gap:6px;position:relative;padding:12px 0}
+.wbox{
+  width:52px;height:52px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--tx2);
+  transition:background .3s,border-color .3s,color .3s;position:relative;
+}
+.wbox.inp{background:rgba(99,102,241,.2);border-color:var(--i);color:#a5b4fc}
+.wbox.tgt{background:rgba(34,211,238,.15);border-color:var(--c);color:#67e8f9}
+#win-label{
+  display:flex;gap:6px;margin-top:6px;font-size:.75rem;font-family:'JetBrains Mono',monospace;
+}
+.lbl-i{color:var(--i);font-weight:600}
+.lbl-t{color:var(--c);font-weight:600}
+
+/* ── Embedding diagram ── */
+.emb-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:center}
+.emb-box{
+  background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:10px 16px;font-family:'JetBrains Mono',monospace;font-size:.82rem;
+  text-align:center;min-width:80px;
+}
+.emb-vec{
+  display:flex;gap:3px;align-items:flex-end;height:60px;
+}
+.emb-bar{width:10px;border-radius:3px 3px 0 0;background:linear-gradient(to top,var(--i),var(--c));transition:height .6s}
+
+/* ── QKV diagram ── */
+.qkv-flow{display:flex;flex-direction:column;align-items:center;gap:0;max-width:800px;width:100%}
+.qkv-top{display:flex;justify-content:center;margin-bottom:4px}
+.qkv-x{
+  background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.4);color:#fcd34d;
+  padding:10px 24px;border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;
+}
+.qkv-mats{display:flex;gap:20px;justify-content:center;margin:10px 0}
+.qkv-mat{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s;
+}
+.qkv-mat.show{opacity:1;transform:translateY(0)}
+.qkv-mat-box{
+  width:70px;height:70px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;border:2px solid;
+}
+.qkv-q .qkv-mat-box{background:rgba(99,102,241,.15);border-color:var(--i);color:#a5b4fc}
+.qkv-k .qkv-mat-box{background:rgba(16,185,129,.12);border-color:var(--g);color:#6ee7b7}
+.qkv-v .qkv-mat-box{background:rgba(245,158,11,.12);border-color:var(--a);color:#fcd34d}
+.qkv-lbl{font-size:.75rem;color:var(--tx2);font-family:'JetBrains Mono',monospace}
+.qkv-ops{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:10px 0}
+.op-chip{
+  padding:6px 14px;border-radius:20px;font-size:.8rem;font-family:'JetBrains Mono',monospace;font-weight:600;
+  opacity:0;transform:scale(.9);transition:opacity .4s,transform .4s;border:1px solid;
+}
+.op-chip.show{opacity:1;transform:scale(1)}
+.op1{background:rgba(99,102,241,.12);border-color:rgba(99,102,241,.4);color:#a5b4fc}
+.op2{background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.4);color:#6ee7b7}
+.op3{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.4);color:#fcd34d}
+.op4{background:rgba(34,211,238,.12);border-color:rgba(34,211,238,.4);color:#67e8f9}
+
+/* ── Attention heatmap ── */
+.heatmap{display:flex;flex-direction:column;gap:4px;margin:8px 0}
+.hm-row{display:flex;gap:4px}
+.hm-cell{
+  width:52px;height:52px;border-radius:6px;display:flex;align-items:center;justify-content:center;
+  font-size:.72rem;font-weight:700;font-family:'JetBrains Mono',monospace;
+  transition:background .6s,color .4s;
+}
+.hm-label{font-size:.7rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;width:52px;text-align:center}
+
+/* ── Pipeline ── */
+.pipeline{display:flex;align-items:center;gap:0;flex-wrap:wrap;justify-content:center;max-width:900px}
+.pipe-step{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:16px 20px;min-width:110px;
+  opacity:0;transform:translateY(20px);transition:opacity .4s,transform .4s;
+}
+.pipe-step.show{opacity:1;transform:translateY(0)}
+.pipe-icon{
+  width:54px;height:54px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;
+  border:1px solid var(--border);
+}
+.pipe-name{font-size:.75rem;font-weight:600;color:var(--tx2);text-align:center;letter-spacing:.02em}
+.pipe-arrow{font-size:1.2rem;color:var(--tx3);margin-bottom:26px}
+
+/* ── Section break ── */
+.section-break{
+  background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(34,211,238,.06));
+  border:1px solid rgba(99,102,241,.2);border-radius:24px;
+  padding:48px 64px;text-align:center;max-width:600px;
+}
+.section-num{
+  font-size:.9rem;font-weight:600;letter-spacing:.15em;color:var(--tx3);text-transform:uppercase;margin-bottom:12px;
+}
+
+/* ── Two column layout ── */
+.two-col{display:flex;gap:32px;align-items:flex-start;width:100%;max-width:1000px;flex-wrap:wrap}
+.two-col .col{flex:1;min-width:280px;display:flex;flex-direction:column;gap:16px}
+
+/* ── Entrance animations ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 0 0 rgba(99,102,241,0)}50%{box-shadow:0 0 24px 4px rgba(99,102,241,.3)}}
+.anim-up{animation:fadeUp .6s ease both}
+.anim-in{animation:fadeIn .6s ease both}
+.anim-scale{animation:scaleIn .5s ease both}
+.d1{animation-delay:.1s}.d2{animation-delay:.2s}.d3{animation-delay:.3s}
+.d4{animation-delay:.4s}.d5{animation-delay:.5s}.d6{animation-delay:.6s}
+
+/* ── Math ── */
+.math{
+  font-family:'JetBrains Mono',monospace;font-size:1.05rem;
+  background:var(--cbg);border:1px solid var(--border);border-radius:10px;
+  padding:14px 24px;color:var(--tx);display:inline-block;text-align:center;
+}
+.math .part{display:inline-block;padding:0 6px;border-radius:6px;font-weight:700}
+.mq{background:rgba(99,102,241,.2);color:#a5b4fc}
+.mk{background:rgba(16,185,129,.2);color:#6ee7b7}
+.mv{background:rgba(245,158,11,.2);color:#fcd34d}
+.md{background:rgba(244,63,94,.15);color:#fda4af}
+
+/* ── Tooltip ── */
+.note{
+  font-size:.82rem;color:var(--tx3);background:rgba(255,255,255,.03);
+  border:1px solid var(--border);border-radius:8px;padding:8px 14px;
+  max-width:680px;text-align:center;line-height:1.5;margin-top:8px;
+}
+
+/* ── Prereq badge ── */
+.prereq-grid{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;max-width:860px}
+.prereq-card{
+  flex:1;min-width:180px;max-width:240px;
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:20px;display:flex;flex-direction:column;gap:10px;
+  transition:border-color .2s;
+}
+.prereq-card:hover{border-color:rgba(99,102,241,.4)}
+.prereq-card .ico{font-size:1.8rem}
+.prereq-card h4{font-size:.92rem;font-weight:700;color:var(--tx)}
+.prereq-card p{font-size:.8rem;color:var(--tx2);line-height:1.5}
+
+/* ── Shapes ── */
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:currentColor}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div id="slide-num"></div>
+
+<div id="deck">
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 1 · TITLE
+═══════════════════════════════════════════════════════ -->
+<div class="slide active" id="s1">
+  <div class="anim-up" style="text-align:center;display:flex;flex-direction:column;align-items:center;gap:20px">
+    <div class="tag">Day 0 · Coding Session 1</div>
+    <h1><span class="grad">Foundations of a</span><br>Transformer</h1>
+    <p style="max-width:520px;font-size:1.1rem">Tokenization, Embeddings &amp; Self-Attention —<br>understanding the first two files of our codebase.</p>
+    <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;justify-content:center">
+      <span class="tag" style="margin:0">TOKENIZATION_AND_EMBEDDING.py</span>
+      <span class="tag cyan" style="margin:0">SELF_ATTENTION.py</span>
+    </div>
+    <div style="margin-top:32px;display:flex;gap:24px;color:var(--tx3);font-size:.85rem">
+      <span>⏱ ~45 min</span><span>·</span><span>📖 2 files</span><span>·</span><span>🔢 24 slides</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 2 · AGENDA
+═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s2">
+  <div style="text-align:center;display:flex;flex-direction:column;align-items:center;gap:24px;width:100%;max-width:820px">
+    <div class="tag anim-up">Agenda</div>
+    <h2 class="anim-up d1">What We Cover Today</h2>
+    <div class="cards-row anim-up d2">
+      <div class="card" style="border-color:rgba(99,102,241,.3)">
+        <div style="font-size:1.4rem;margin-bottom:10px">📋</div>
+        <h3 style="color:var(--i);font-size:.95rem;margin-bottom:8px">Prerequisites</h3>
+        <p style="font-size:.82rem">Language models, tensors, the big transformer pipeline</p>
+      </div>
+      <div class="card" style="border-color:rgba(34,211,238,.3)">
+        <div style="font-size:1.4rem;margin-bottom:10px">🔤</div>
+        <h3 style="color:var(--c);font-size:.95rem;margin-bottom:8px">Part 1: Tokenization</h3>
+        <p style="font-size:.82rem">BPE, sliding windows, token + positional embeddings</p>
+      </div>
+      <div class="card" style="border-color:rgba(139,92,246,.3)">
+        <div style="font-size:1.4rem;margin-bottom:10px">🔍</div>
+        <h3 style="color:var(--v);font-size:.95rem;margin-bottom:8px">Part 2: Self-Attention</h3>
+        <p style="font-size:.82rem">QKV, scaled dot-product, attention weights</p>
+      </div>
+    </div>
+    <p class="anim-up d3" style="font-size:.88rem">Press <kbd style="background:var(--card);border:1px solid var(--border);border-radius:5px;padding:2px 8px;font-family:monospace">→</kbd> or use the buttons below to advance slides</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 3 · PREREQ — What is a Language Model
+═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s3">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:20px;max-width:820px;width:100%">
+    <div class="tag anim-up">Prerequisites</div>
+    <h2 class="anim-up d1">What is a Language Model?</h2>
+    <div class="card anim-up d2" style="width:100%;max-width:680px;text-align:center;border-color:rgba(99,102,241,.3)">
+      <p style="font-size:1.05rem;margin-bottom:16px">A language model learns to predict <strong style="color:var(--i)">the next token</strong> given a sequence of preceding tokens.</p>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;align-items:center">
+        <span class="tok t1 show" style="transition:none">The</span>
+        <span class="tok t2 show" style="transition:none">solar</span>
+        <span class="tok t3 show" style="transition:none">panel</span>
+        <span class="tok t4 show" style="transition:none">converts</span>
+        <span style="color:var(--tx3);font-size:1.2rem">→</span>
+        <span class="tok t5 show" style="background:rgba(244,63,94,.2);border-color:var(--r);color:#fda4af;animation:glowPulse 2s infinite">light</span>
+        <span style="font-size:.75rem;color:var(--tx3)">(predicted)</span>
+      </div>
+    </div>
+    <ul class="bullets anim-up d3">
+      <li><strong>Autoregressive</strong> — each prediction feeds back as input for the next</li>
+      <li><strong>No supervision needed</strong> — the "label" is just the next word in the text</li>
+      <li><strong>Emergent capability</strong> — predict well enough and the model learns grammar, facts, reasoning</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 4 · PREREQ — Tensors
+═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s4">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:20px;max-width:860px;width:100%">
+    <div class="tag anim-up">Prerequisites</div>
+    <h2 class="anim-up d1">Tensors — PyTorch's Core Data Structure</h2>
+    <div class="two-col anim-up d2">
+      <div class="col">
+        <div class="card">
+          <h3 style="margin-bottom:10px;font-size:.95rem">📐 Think in shapes</h3>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:.82rem;display:flex;flex-direction:column;gap:6px;color:var(--tx2)">
+            <div><span style="color:var(--i)">torch.tensor([1,2,3])</span>  → shape <span style="color:var(--nm)">(3,)</span></div>
+            <div><span style="color:var(--i)">torch.randn(8, 4)</span>     → shape <span style="color:var(--nm)">(8, 4)</span></div>
+            <div><span style="color:var(--i)">token_emb(inputs)</span>     → shape <span style="color:var(--nm)">(8, 4, 256)</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom:10px;font-size:.95rem">🔤 What each axis means</h3>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--tx2);display:flex;flex-direction:column;gap:4px">
+            <span><span class="dot" style="color:var(--i)"></span> <span style="color:var(--i)">8</span> = batch size</span>
+            <span><span class="dot" style="color:var(--c)"></span> <span style="color:var(--c)">4</span> = sequence length (tokens)</span>
+            <span><span class="dot" style="color:var(--v)"></span> <span style="color:var(--v)">256</span> = embedding dimension</span>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card" style="border-color:rgba(34,211,238,.25)">
+          <h3 style="margin-bottom:12px;font-size:.95rem">📦 Visualising a (2, 3, 256) tensor</h3>
+          <div style="display:flex;gap:8px;justify-content:center">
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:.7rem;color:var(--tx3);text-align:center">batch 0</div>
+              <div style="display:flex;flex-direction:column;gap:3px">
+                <div style="display:flex;gap:3px">
+                  <div style="width:14px;height:14px;border-radius:3px;background:rgba(99,102,241,.5)"></div>
+                  <div style="width:14px;height:14px;border-radius:3px;background:rgba(99,102,241,.4)"></div>
+                  <div style="font-size:.65rem;color:var(--tx3);margin-left:4px;align-self:center">token 0</div>
+                </div>
+                <div style="display:flex;gap:3px">
+                  <div style="width:14px;height:14px;border-radius:3px;background:rgba(99,102,241,.3)"></div>
+                  <div style="width:14px;height:14px;border-radius:3px;background:rgba(99,102,241,.2)"></div>
+                  <div style="font-size:.65rem;color:var(--tx3);margin-left:4px;align-self:center">token 1</div>
+                </div>
+                <div style="display:flex;gap:3px">
+                  <div style="width:14px;height:14px;border-radius:3px;background:rgba(99,102,241,.15)"></div>
+                  <div style="width:14px;height:14px;border-radius:3px;background:rgba(99,102,241,.1)"></div>
+                  <div style="font-size:.65rem;color:var(--tx3);margin-left:4px;align-self:center">token 2</div>
+                </div>
+              </div>
+            </div>
+            <div style="width:1px;background:var(--border);margin:0 8px"></div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:.7rem;color:var(--tx3);text-align:center">batch 1</div>
+              <div style="display:flex;flex-direction:column;gap:3px">
+                <div style="display:flex;gap:3px">
+                  <div style="width:14px;height:14px;border-radius:3px;background:rgba(34,211,238,.5)"></div>
+                  <div style="width:14px;height:14px;border-radius:3px;background:rgba(34,211,238,.4)"></div>
+                  <div style="font-size:.65rem;color:var(--tx3);margin-left:4px;align-self:center">token 0</div>
+                </div>
+                <div style="display:flex;gap:3px">
+                  <div style="width:14px;height:14px;border-radius:3px;background:rgba(34,211,238,.3)"></div>
+                  <div style="width:14px;height:14px;border-radius:3px;background:rgba(34,211,238,.2)"></div>
+                  <div style="font-size:.65rem;color:var(--tx3);margin-left:4px;align-self:center">token 1</div>
+                </div>
+                <div style="display:flex;gap:3px">
+                  <div style="width:14px;height:14px;border-radius:3px;background:rgba(34,211,238,.15)"></div>
+                  <div style="width:14px;height:14px;border-radius:3px;background:rgba(34,211,238,.1)"></div>
+                  <div style="font-size:.65rem;color:var(--tx3);margin-left:4px;align-self:center">token 2</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p style="font-size:.75rem;margin-top:12px;color:var(--tx3);text-align:center">Each row = one 256-dim vector (only 2 shown)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 5 · PREREQ — The Big Picture Pipeline
+═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s5">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:24px;max-width:1000px;width:100%">
+    <div class="tag anim-up">Prerequisites</div>
+    <h2 class="anim-up d1">The Transformer Pipeline</h2>
+    <div class="pipeline" id="pipeline">
+      <div class="pipe-step" style="transition-delay:.1s">
+        <div class="pipe-icon" style="background:rgba(99,102,241,.15);border-color:rgba(99,102,241,.4)">📝</div>
+        <div class="pipe-name">Raw Text</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step" style="transition-delay:.2s">
+        <div class="pipe-icon" style="background:rgba(34,211,238,.12);border-color:rgba(34,211,238,.35)">🔤</div>
+        <div class="pipe-name">Tokenizer</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step" style="transition-delay:.3s">
+        <div class="pipe-icon" style="background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.35)">📦</div>
+        <div class="pipe-name">Token IDs</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step" style="transition-delay:.4s">
+        <div class="pipe-icon" style="background:rgba(139,92,246,.12);border-color:rgba(139,92,246,.35)">🧮</div>
+        <div class="pipe-name">Embeddings</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step" style="transition-delay:.5s">
+        <div class="pipe-icon" style="background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.35)">🔍</div>
+        <div class="pipe-name">Attention</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step" style="transition-delay:.6s">
+        <div class="pipe-icon" style="background:rgba(244,63,94,.12);border-color:rgba(244,63,94,.35)">📤</div>
+        <div class="pipe-name">Logits</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;anim-up d3">
+      <div class="card" style="border-color:rgba(34,211,238,.3);min-width:200px;text-align:center">
+        <div style="font-size:.75rem;color:var(--c);font-weight:600;margin-bottom:6px;letter-spacing:.06em">TODAY — PART 1</div>
+        <p style="font-size:.82rem">Tokenizer → Token IDs → Embeddings</p>
+      </div>
+      <div class="card" style="border-color:rgba(139,92,246,.3);min-width:200px;text-align:center">
+        <div style="font-size:.75rem;color:var(--v);font-weight:600;margin-bottom:6px;letter-spacing:.06em">TODAY — PART 2</div>
+        <p style="font-size:.82rem">Attention mechanism (Self-Attention)</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 6 · SECTION BREAK — Tokenization
+═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s6">
+  <div class="section-break anim-scale">
+    <div class="section-num">Part 1 of 2</div>
+    <h2 style="font-size:2.6rem;margin-bottom:14px"><span class="grad">Tokenization</span><br>&amp; Embeddings</h2>
+    <p style="color:var(--tx2)">How raw text becomes the dense numerical vectors a neural network can process</p>
+    <div style="margin-top:20px;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--tx3)">
+      📄 TOKENIZATION_AND_EMBEDDING.py
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 7 · WHAT IS TOKENIZATION
+═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s7">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:20px;max-width:820px;width:100%">
+    <div class="tag anim-up">Tokenization</div>
+    <h2 class="anim-up d1">Text → Tokens → IDs</h2>
+    <p class="anim-up d2" style="text-align:center;max-width:560px">Neural networks need numbers, not characters. We split text into <strong style="color:var(--c)">sub-word pieces</strong> and map each to an integer.</p>
+    <div class="diag anim-up d3">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--tx2);margin-bottom:6px">"The solar panel converts light"</div>
+      <div class="arrow-down">↓</div>
+      <div class="token-row" id="tok-row">
+        <span class="tok t1" data-i="0">The</span>
+        <span class="tok t2" data-i="1"> solar</span>
+        <span class="tok t3" data-i="2"> panel</span>
+        <span class="tok t4" data-i="3"> converts</span>
+        <span class="tok t5" data-i="4"> light</span>
+      </div>
+      <div class="arrow-down">↓</div>
+      <div class="id-row" id="id-row">
+        <span class="tid" data-i="0">464</span>
+        <span class="tid" data-i="1">38765</span>
+        <span class="tid" data-i="2">7115</span>
+        <span class="tid" data-i="3">26161</span>
+        <span class="tid" data-i="4">1657</span>
+      </div>
+    </div>
+    <div class="note anim-up d4">GPT-2 vocabulary has <strong style="color:var(--nm)">50,257</strong> possible tokens — every integer is an index into this lookup table</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 8 · BPE
+═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s8">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:20px;max-width:860px;width:100%">
+    <div class="tag anim-up">BPE · Byte Pair Encoding</div>
+    <h2 class="anim-up d1">How tiktoken Splits Text</h2>
+    <div class="two-col anim-up d2">
+      <div class="col">
+        <div class="card">
+          <h3 style="font-size:.92rem;margin-bottom:10px;color:var(--c)">🔗 BPE Algorithm</h3>
+          <ul class="bullets" style="gap:8px">
+            <li style="font-size:.84rem"><strong>Start</strong> with individual characters</li>
+            <li style="font-size:.84rem"><strong>Merge</strong> the most frequent adjacent pair</li>
+            <li style="font-size:.84rem"><strong>Repeat</strong> until vocab size is reached</li>
+            <li style="font-size:.84rem"><strong>Result</strong>: common words = 1 token; rare words = split</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card" style="border-color:rgba(245,158,11,.25)">
+          <h3 style="font-size:.92rem;margin-bottom:10px;color:var(--a)">💡 Why sub-words?</h3>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:.78rem;display:flex;flex-direction:column;gap:6px;color:var(--tx2)">
+            <div>"<span style="color:var(--g)">solar</span>" → 1 token</div>
+            <div>"<span style="color:var(--a)">photovoltaic</span>" → ["photo","volt","aic"]</div>
+            <div>"<span style="color:var(--r)">xkcd</span>" → ["x","k","c","d"]</div>
+          </div>
+          <p style="font-size:.78rem;margin-top:10px;color:var(--tx3)">Handles any word with a fixed-size vocabulary</p>
+        </div>
+        <pre data-file="TOKENIZATION_AND_EMBEDDING.py" style="font-size:.78rem;padding:14px 18px">
+<span class="kw">import</span> tiktoken
+
+tokenizer = tiktoken.<span class="fn">get_encoding</span>(<span class="st">"gpt2"</span>)
+<span class="cm"># vocab size: 50,257</span>
+tokenizer.<span class="fn">encode</span>(<span class="st">"solar"</span>)   <span class="cm"># [38765]</span>
+tokenizer.<span class="fn">encode</span>(<span class="st">"photovoltaic"</span>) <span class="cm"># [5245,3020,3970]</span></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 9 · CODE: Tokenizer setup
+═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s9">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:20px;max-width:860px;width:100%">
+    <div class="tag anim-up">Code Walkthrough</div>
+    <h2 class="anim-up d1">Loading &amp; Tokenizing the Text</h2>
+    <pre data-file="TOKENIZATION_AND_EMBEDDING.py" class="anim-up d2">
+<span class="kw">import</span> tiktoken
+<span class="kw">import</span> torch
+<span class="kw">from</span> torch.utils.data <span class="kw">import</span> Dataset, DataLoader
+
+<span class="cm"># ── 1. Load the GPT-2 tokenizer ──────────────────────────────────</span>
+tokenizer = tiktoken.<span class="fn">get_encoding</span>(<span class="st">"gpt2"</span>)
+
+<span class="cm"># ── 2. Read our training corpus ──────────────────────────────────</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="st">"final_text.txt"</span>, <span class="st">"r"</span>, encoding=<span class="st">"utf-8"</span>) <span class="kw">as</span> f:
+    raw_text = f.<span class="fn">read</span>()
+
+<span class="cm"># ── 3. Shared constants ───────────────────────────────────────────</span>
+VOCAB_SIZE = tokenizer.n_vocab   <span class="cm"># 50,257</span>
+EMBED_DIM  = <span class="nm">256</span>               <span class="cm"># dimensionality of each token vector</span></pre>
+    <ul class="bullets anim-up d3" style="max-width:680px">
+      <li><code style="color:var(--c)">tiktoken</code> uses OpenAI's fast Rust tokenizer — same BPE as GPT-2</li>
+      <li><code style="color:var(--c)">n_vocab = 50257</code> — the size of our embedding table</li>
+      <li><code style="color:var(--v)">EMBED_DIM = 256</code> — every token maps to a 256-dimensional vector</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 10 · SLIDING WINDOW (animated)
+═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s10">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:20px;max-width:860px;width:100%">
+    <div class="tag anim-up">Dataset Construction</div>
+    <h2 class="anim-up d1">The Sliding Window</h2>
+    <p class="anim-up d2" style="text-align:center;max-width:580px">We create training pairs by sliding a window across the token sequence. <strong style="color:var(--i)">Input</strong> and <strong style="color:var(--c)">target</strong> are offset by exactly <strong style="color:var(--a)">1 token</strong>.</p>
+    <div class="anim-up d3" style="display:flex;flex-direction:column;align-items:center;gap:8px">
+      <div id="win-seq"></div>
+      <div id="win-label">
+        <span class="lbl-i">■ input (max_length tokens)</span>
+        <span style="margin:0 8px;color:var(--tx3)">·</span>
+        <span class="lbl-t">■ target (shifted +1)</span>
+      </div>
+      <div id="win-info" style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--tx3);margin-top:6px"></div>
+    </div>
+    <div class="note anim-up d4">
+      <strong>Why offset by 1?</strong> — The model learns: "given tokens 0..N-1, what is token N?" Each window gives us one next-token prediction.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 11 · CODE: GPTDatasetV1
+═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s11">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:16px;max-width:860px;width:100%">
+    <div class="tag anim-up">Code Walkthrough</div>
+    <h2 class="anim-up d1">GPTDatasetV1</h2>
+    <pre data-file="TOKENIZATION_AND_EMBEDDING.py" class="anim-up d2" style="font-size:.78rem">
+<span class="kw">class</span> <span class="cl">GPTDatasetV1</span>(Dataset):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, txt, tokenizer, max_length, stride):
+        token_ids = tokenizer.<span class="fn">encode</span>(txt, allowed_special={<span class="st">"&lt;|endoftext|&gt;"</span>})
+
+        <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">0</span>, <span class="fn">len</span>(token_ids) - max_length, stride):
+            <span class="cm"># input:  tokens[i .. i+max_length]</span>
+            <span class="kw">self</span>.input_ids.<span class="fn">append</span>(torch.<span class="fn">tensor</span>(token_ids[i : i+max_length]))
+            <span class="cm"># target: tokens[i+1 .. i+max_length+1]  ← shifted by 1</span>
+            <span class="kw">self</span>.target_ids.<span class="fn">append</span>(torch.<span class="fn">tensor</span>(token_ids[i+<span class="nm">1</span> : i+max_length+<span class="nm">1</span>]))
+
+<span class="kw">def</span> <span class="fn">create_dataloader_v1</span>(txt, batch_size=<span class="nm">4</span>, max_length=<span class="nm">256</span>, stride=<span class="nm">128</span>, ...):
+    dataset   = <span class="cl">GPTDatasetV1</span>(txt, tokenizer, max_length, stride)
+    dataloader = <span class="cl">DataLoader</span>(dataset, batch_size=batch_size, shuffle=shuffle)
+    <span class="kw">return</span> dataloader</pre>
+    <div class="cards-row anim-up d3">
+      <div class="card" style="border-color:rgba(99,102,241,.3);min-width:180px">
+        <div style="font-size:.75rem;color:var(--i);font-weight:600;margin-bottom:4px">max_length</div>
+        <p style="font-size:.8rem">Context window — how many tokens the model sees at once</p>
+      </div>
+      <div class="card" style="border-color:rgba(34,211,238,.3);min-width:180px">
+        <div style="font-size:.75rem;color:var(--c);font-weight:600;margin-bottom:4px">stride</div>
+        <p style="font-size:.8rem">Step size. stride &lt; max_length creates overlapping windows → more training samples</p>
+      </div>
+      <div class="card" style="border-color:rgba(16,185,129,.3);min-width:180px">
+        <div style="font-size:.75rem;color:var(--g);font-weight:600;margin-bottom:4px">DataLoader</div>
+        <p style="font-size:.8rem">Batches samples, shuffles, drops incomplete last batch</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 12 · TOKEN EMBEDDINGS
+═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s12">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:20px;max-width:860px;width:100%">
+    <div class="tag anim-up">Embeddings</div>
+    <h2 class="anim-up d1">Token Embeddings</h2>
+    <p class="anim-up d2" style="text-align:center;max-width:580px">An integer index can't be passed to a neural network. We map each token ID to a <strong style="color:var(--v)">trainable dense vector</strong> — a row lookup in a weight matrix.</p>
+    <div class="anim-up d3" style="display:flex;flex-direction:column;align-items:center;gap:12px">
+      <div class="emb-row">
+        <div class="emb-box" style="border-color:rgba(99,102,241,.4);color:#a5b4fc">
+          <div style="font-size:.7rem;color:var(--tx3);margin-bottom:4px">token id</div>
+          <div style="font-size:1.1rem;font-weight:700">464</div>
+        </div>
+        <div style="font-size:1.4rem;color:var(--tx3)">→</div>
+        <div class="card" style="border-color:rgba(139,92,246,.4);padding:12px;display:flex;flex-direction:column;gap:4px">
+          <div style="font-size:.7rem;color:var(--v);text-align:center;margin-bottom:6px">nn.Embedding(50257, 256)</div>
+          <div style="display:flex;gap:3px;align-items:flex-end;height:50px" id="emb-bars">
+            <!-- filled by JS -->
+          </div>
+          <div style="font-size:.68rem;color:var(--tx3);text-align:center">256-dim vector</div>
+        </div>
+      </div>
+    </div>
+    <pre data-file="TOKENIZATION_AND_EMBEDDING.py" class="anim-up d4" style="font-size:.82rem">
+token_embedding_layer = torch.nn.<span class="cl">Embedding</span>(VOCAB_SIZE, EMBED_DIM)
+<span class="cm"># Shape: (50257, 256) — one row per token in the vocab</span>
+
+token_embeddings = token_embedding_layer(inputs)
+<span class="cm"># inputs shape:           (8, 4)        ← batch × seq</span>
+<span class="cm"># token_embeddings shape: (8, 4, 256)   ← batch × seq × embed_dim</span></pre>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 13 · POSITIONAL EMBEDDINGS
+═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s13">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:20px;max-width:860px;width:100%">
+    <div class="tag anim-up cyan">Embeddings</div>
+    <h2 class="anim-up d1">Positional Embeddings</h2>
+    <p class="anim-up d2" style="text-align:center;max-width:580px">Attention has no built-in sense of order. We inject position information by adding a <strong style="color:var(--c)">learned position vector</strong> to each token.</p>
+    <div class="two-col anim-up d3">
+      <div class="col">
+        <div class="card">
+          <h3 style="font-size:.9rem;margin-bottom:10px;color:var(--c)">Without position info</h3>
+          <p style="font-size:.82rem;margin-bottom:8px">The model sees the same token embedding for "solar" whether it's at position 0 or position 100.</p>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span class="tok t2 show" style="transition:none">"solar" pos 0</span>
+            <span style="color:var(--tx3)">=</span>
+            <span class="tok t2 show" style="transition:none">"solar" pos 5</span>
+          </div>
+        </div>
+        <div class="card" style="border-color:rgba(34,211,238,.3)">
+          <h3 style="font-size:.9rem;margin-bottom:10px;color:var(--c)">With position info</h3>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--tx2)">
+            pos 0 → unique vector p<sub>0</sub><br>
+            pos 1 → unique vector p<sub>1</sub><br>
+            pos 2 → unique vector p<sub>2</sub><br>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <pre data-file="TOKENIZATION_AND_EMBEDDING.py" style="font-size:.78rem;padding:16px 18px">
+<span class="cm"># Position embedding: one vector per slot</span>
+pos_emb_layer = nn.<span class="cl">Embedding</span>(CONTEXT_LENGTH, EMBED_DIM)
+
+pos_embeddings = pos_emb_layer(
+    torch.<span class="fn">arange</span>(CONTEXT_LENGTH)
+)
+<span class="cm"># shape: (4, 256)  ← position × embed_dim</span>
+
+<span class="cm"># Final input: token + position (same dim → add)</span>
+input_embeddings = token_embeddings + pos_embeddings
+<span class="cm"># shape: (8, 4, 256)</span></pre>
+        <div class="note" style="margin-top:0">
+          Both token &amp; position embeddings have the same 256-dim shape — we simply <strong style="color:var(--c)">add</strong> them element-wise
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 14 · COMBINED EMBEDDINGS SUMMARY
+═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s14">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:22px;max-width:820px;width:100%">
+    <div class="tag anim-up green">Summary — Part 1</div>
+    <h2 class="anim-up d1">What We Built</h2>
+    <div class="anim-up d2" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:center">
+      <div class="emb-box" style="border-color:rgba(34,211,238,.4);color:#67e8f9;min-width:120px">
+        <div style="font-size:.7rem;color:var(--tx3);margin-bottom:4px">raw text</div>
+        <div style="font-size:.9rem">"The solar…"</div>
+      </div>
+      <div style="font-size:1.3rem;color:var(--tx3)">→</div>
+      <div class="emb-box" style="border-color:rgba(99,102,241,.4);color:#a5b4fc;min-width:120px">
+        <div style="font-size:.7rem;color:var(--tx3);margin-bottom:4px">token ids</div>
+        <div style="font-size:.85rem;font-family:'JetBrains Mono',monospace">[464, 38765, …]</div>
+      </div>
+      <div style="font-size:1.3rem;color:var(--tx3)">→</div>
+      <div class="emb-box" style="border-color:rgba(139,92,246,.4);color:#c4b5fd;min-width:140px">
+        <div style="font-size:.7rem;color:var(--tx3);margin-bottom:4px">input embeddings</div>
+        <div style="font-size:.85rem;font-family:'JetBrains Mono',monospace">tensor(8,4,256)</div>
+      </div>
+    </div>
+    <div class="cards-row anim-up d3">
+      <div class="card" style="border-color:rgba(34,211,238,.3);min-width:200px">
+        <div style="font-size:.75rem;color:var(--c);font-weight:600;margin-bottom:6px">✅ GPTDatasetV1</div>
+        <p style="font-size:.82rem">Sliding window → (input_ids, target_ids) pairs</p>
+      </div>
+      <div class="card" style="border-color:rgba(99,102,241,.3);min-width:200px">
+        <div style="font-size:.75rem;color:var(--i);font-weight:600;margin-bottom:6px">✅ Token Embedding</div>
+        <p style="font-size:.82rem">nn.Embedding(50257, 256) — learned lookup table</p>
+      </div>
+      <div class="card" style="border-color:rgba(139,92,246,.3);min-width:200px">
+        <div style="font-size:.75rem;color:var(--v);font-weight:600;margin-bottom:6px">✅ Positional Embedding</div>
+        <p style="font-size:.82rem">nn.Embedding(context_len, 256) — injected position sense</p>
+      </div>
+    </div>
+    <div class="math anim-up d4">
+      input_emb = <span class="part" style="background:rgba(34,211,238,.15);color:#67e8f9">token_emb(ids)</span> + <span class="part" style="background:rgba(139,92,246,.15);color:#c4b5fd">pos_emb(positions)</span> &nbsp;&nbsp; shape: <span class="nm">(B, T, 256)</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 15 · SECTION BREAK — Self-Attention
+═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s15">
+  <div class="section-break anim-scale" style="background:linear-gradient(135deg,rgba(139,92,246,.1),rgba(245,158,11,.06));border-color:rgba(139,92,246,.3)">
+    <div class="section-num">Part 2 of 2</div>
+    <h2 style="font-size:2.6rem;margin-bottom:14px"><span class="grad2">Self-Attention</span></h2>
+    <p style="color:var(--tx2)">Teaching tokens to look at each other and decide what information matters</p>
+    <div style="margin-top:20px;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--tx3)">
+      📄 SELF_ATTENTION.py
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 16 · WHY ATTENTION
+═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s16">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:20px;max-width:820px;width:100%">
+    <div class="tag amber">Motivation</div>
+    <h2 class="anim-up d1">Why Does Context Matter?</h2>
+    <div class="cards-row anim-up d2">
+      <div class="card" style="border-color:rgba(244,63,94,.3);text-align:center">
+        <p style="color:var(--tx2);margin-bottom:12px;font-size:.9rem">She went to the river <strong style="color:var(--r)">bank</strong> to fish</p>
+        <span class="tok t5 show" style="transition:none">bank = riverbank</span>
+      </div>
+      <div class="card" style="border-color:rgba(99,102,241,.3);text-align:center">
+        <p style="color:var(--tx2);margin-bottom:12px;font-size:.9rem">He deposited cash at the <strong style="color:var(--i)">bank</strong></p>
+        <span class="tok t1 show" style="transition:none">bank = financial</span>
+      </div>
+    </div>
+    <p class="anim-up d3" style="text-align:center;max-width:580px">The word "<strong style="color:var(--a)">bank</strong>" has the same token ID in both sentences, but a different <em>meaning</em>. Self-attention lets each token <strong style="color:var(--c)">look at all other tokens</strong> and update its representation based on context.</p>
+    <div class="card anim-up d4" style="border-color:rgba(34,211,238,.3);max-width:600px;text-align:center">
+      <p style="font-size:.92rem">Self-attention computes a <strong style="color:var(--c)">weighted blend</strong> of all token vectors — weights determined by how relevant each token is to the current one.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 17 · QKV INTUITION
+═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s17">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:20px;max-width:860px;width:100%">
+    <div class="tag amber">Self-Attention</div>
+    <h2 class="anim-up d1">Query · Key · Value</h2>
+    <div class="cards-row anim-up d2">
+      <div class="card" style="border-color:rgba(99,102,241,.4);text-align:center;min-width:180px">
+        <div style="font-size:1.6rem;margin-bottom:8px">🔍</div>
+        <div style="font-family:'JetBrains Mono',monospace;color:#a5b4fc;font-weight:700;font-size:1rem;margin-bottom:6px">Query (Q)</div>
+        <p style="font-size:.82rem">"What am I looking for?"<br>Current token's question</p>
+      </div>
+      <div class="card" style="border-color:rgba(16,185,129,.4);text-align:center;min-width:180px">
+        <div style="font-size:1.6rem;margin-bottom:8px">🔑</div>
+        <div style="font-family:'JetBrains Mono',monospace;color:#6ee7b7;font-weight:700;font-size:1rem;margin-bottom:6px">Key (K)</div>
+        <p style="font-size:.82rem">"What do I represent?"<br>Each token's label</p>
+      </div>
+      <div class="card" style="border-color:rgba(245,158,11,.4);text-align:center;min-width:180px">
+        <div style="font-size:1.6rem;margin-bottom:8px">📦</div>
+        <div style="font-family:'JetBrains Mono',monospace;color:#fcd34d;font-weight:700;font-size:1rem;margin-bottom:6px">Value (V)</div>
+        <p style="font-size:.82rem">"What do I carry?"<br>The actual information to share</p>
+      </div>
+    </div>
+    <div class="card anim-up d3" style="max-width:640px;border-color:rgba(245,158,11,.25)">
+      <h3 style="font-size:.9rem;margin-bottom:10px">📚 Dictionary analogy</h3>
+      <p style="font-size:.85rem;color:var(--tx2)">Like a fuzzy dictionary lookup: your <strong style="color:#a5b4fc">query</strong> is matched against all <strong style="color:#6ee7b7">keys</strong>. The match score determines how much of each <strong style="color:#fcd34d">value</strong> you retrieve. More similar Q·K → more of that V flows through.</p>
+    </div>
+    <div class="math anim-up d4">
+      Q = x · <span class="part mq">W_q</span> &nbsp;·&nbsp; K = x · <span class="part mk">W_k</span> &nbsp;·&nbsp; V = x · <span class="part mv">W_v</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 18 · SCALED DOT PRODUCT (animated)
+═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s18">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:18px;max-width:860px;width:100%">
+    <div class="tag amber">Scaled Dot-Product</div>
+    <h2 class="anim-up d1">Computing Attention</h2>
+    <div class="qkv-flow anim-up d2" id="qkv-diag">
+      <div class="qkv-top"><div class="qkv-x">x  (B, T, d_in)</div></div>
+      <div style="color:var(--tx3);font-size:1.3rem;margin:4px 0">↓</div>
+      <div class="qkv-mats">
+        <div class="qkv-mat qkv-q" id="qmat-q">
+          <div class="qkv-mat-box">W_q</div>
+          <div class="qkv-lbl" style="color:#a5b4fc">Q = x·W_q</div>
+        </div>
+        <div class="qkv-mat qkv-k" id="qmat-k">
+          <div class="qkv-mat-box">W_k</div>
+          <div class="qkv-lbl" style="color:#6ee7b7">K = x·W_k</div>
+        </div>
+        <div class="qkv-mat qkv-v" id="qmat-v">
+          <div class="qkv-mat-box">W_v</div>
+          <div class="qkv-lbl" style="color:#fcd34d">V = x·W_v</div>
+        </div>
+      </div>
+      <div class="qkv-ops">
+        <span class="op-chip op1" id="op1">Q @ K<sup>T</sup></span>
+        <span class="op-chip op2" id="op2">÷ √d_head</span>
+        <span class="op-chip op3" id="op3">softmax</span>
+        <span class="op-chip op4" id="op4">× V</span>
+      </div>
+      <div class="math" style="font-size:.88rem">
+        context = <span class="part" style="background:rgba(244,63,94,.1);color:#fda4af">softmax</span>(<span class="part mq">Q</span>·<span class="part mk">K</span><sup>T</sup> / <span class="part md">√d</span>) · <span class="part mv">V</span>
+      </div>
+    </div>
+    <div class="note anim-up d3">
+      <strong style="color:var(--a)">Why √d?</strong> — Dot products grow with dimension. Dividing by √d_head keeps the softmax from saturating to near-zero gradients.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 19 · CODE: SelfAttention class
+═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s19">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:16px;max-width:860px;width:100%">
+    <div class="tag amber">Code Walkthrough</div>
+    <h2 class="anim-up d1">The SelfAttention Class</h2>
+    <pre data-file="SELF_ATTENTION.py" class="anim-up d2" style="font-size:.79rem">
+<span class="kw">class</span> <span class="cl">SelfAttention</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, d_in, d_out):
+        <span class="fn">super</span>().<span class="fn">__init__</span>()
+        <span class="kw">self</span>.W_query = nn.<span class="cl">Linear</span>(d_in, d_out, bias=<span class="kw">False</span>)  <span class="cm"># learnable W_q</span>
+        <span class="kw">self</span>.W_key   = nn.<span class="cl">Linear</span>(d_in, d_out, bias=<span class="kw">False</span>)  <span class="cm"># learnable W_k</span>
+        <span class="kw">self</span>.W_value = nn.<span class="cl">Linear</span>(d_in, d_out, bias=<span class="kw">False</span>)  <span class="cm"># learnable W_v</span>
+
+    <span class="kw">def</span> <span class="fn">forward</span>(<span class="kw">self</span>, x):
+        Q = <span class="kw">self</span>.W_query(x)                         <span class="cm"># (B, T, d_out)</span>
+        K = <span class="kw">self</span>.W_key(x)                           <span class="cm"># (B, T, d_out)</span>
+        V = <span class="kw">self</span>.W_value(x)                         <span class="cm"># (B, T, d_out)</span>
+
+        scale        = K.shape[<span class="nm">-1</span>] ** <span class="nm">0.5</span>          <span class="cm"># √d_out</span>
+        attn_scores  = (Q @ K.<span class="fn">transpose</span>(<span class="nm">-2</span>, <span class="nm">-1</span>)) / scale  <span class="cm"># (B,T,T)</span>
+        attn_weights = torch.<span class="fn">softmax</span>(attn_scores, dim=<span class="nm">-1</span>)   <span class="cm"># rows sum to 1</span>
+
+        context_vecs = attn_weights @ V              <span class="cm"># (B, T, d_out)</span>
+        <span class="kw">return</span> context_vecs, attn_weights</pre>
+    <div class="cards-row anim-up d3">
+      <div class="card" style="min-width:180px;border-color:rgba(99,102,241,.3)">
+        <div style="font-size:.7rem;color:var(--i);font-weight:600;margin-bottom:4px">No bias=False</div>
+        <p style="font-size:.8rem">GPT convention — projection without bias, regularises the representation</p>
+      </div>
+      <div class="card" style="min-width:180px;border-color:rgba(244,63,94,.3)">
+        <div style="font-size:.7rem;color:var(--r);font-weight:600;margin-bottom:4px">(B,T,T) scores</div>
+        <p style="font-size:.8rem">Every token vs every token — T² comparisons per layer</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 20 · ATTENTION WEIGHTS VISUALISATION
+═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s20">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:18px;max-width:820px;width:100%">
+    <div class="tag amber">Attention Weights</div>
+    <h2 class="anim-up d1">Visualising What the Model Attends To</h2>
+    <p class="anim-up d2" style="text-align:center;max-width:580px">The (T × T) weight matrix after softmax. Each <strong>row</strong> = one query token. Each <strong>column</strong> = how much it attends to that key token.</p>
+    <div class="anim-up d3" style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;justify-content:center">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+        <div style="display:flex;gap:4px;margin-bottom:4px">
+          <div style="width:52px"></div>
+          <div class="hm-label">The</div>
+          <div class="hm-label">solar</div>
+          <div class="hm-label">panel</div>
+          <div class="hm-label">con-</div>
+        </div>
+        <div class="heatmap" id="heatmap">
+          <!-- filled by JS -->
+        </div>
+        <div style="font-size:.72rem;color:var(--tx3);text-align:center;margin-top:4px">Darker = higher attention weight</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;max-width:280px">
+        <div class="card" style="border-color:rgba(99,102,241,.3)">
+          <h3 style="font-size:.85rem;margin-bottom:6px;color:var(--i)">Row sum = 1.0</h3>
+          <p style="font-size:.8rem">Softmax normalises each row. "The" distributes 100% of its attention across all tokens.</p>
+        </div>
+        <div class="card" style="border-color:rgba(34,211,238,.3)">
+          <h3 style="font-size:.85rem;margin-bottom:6px;color:var(--c)">These weights are learned</h3>
+          <p style="font-size:.8rem">W_q and W_k are trained by gradient descent to produce useful attention patterns.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 21 · BACKPROP THROUGH QKV
+═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s21">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:20px;max-width:860px;width:100%">
+    <div class="tag amber">Training</div>
+    <h2 class="anim-up d1">Training the QKV Weights</h2>
+    <pre data-file="SELF_ATTENTION.py" class="anim-up d2" style="font-size:.82rem">
+attn      = <span class="cl">SelfAttention</span>(D_IN, D_OUT)
+optimizer = torch.optim.<span class="cl">Adam</span>(attn.<span class="fn">parameters</span>(), lr=<span class="nm">1e-3</span>)
+
+<span class="kw">for</span> step <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">3</span>):
+    optimizer.<span class="fn">zero_grad</span>()
+    context_vecs, _ = attn(x)      <span class="cm"># forward pass</span>
+    loss = context_vecs.<span class="fn">pow</span>(<span class="nm">2</span>).<span class="fn">mean</span>()  <span class="cm"># dummy loss</span>
+    loss.<span class="fn">backward</span>()               <span class="cm"># gradients flow into W_q, W_k, W_v</span>
+    optimizer.<span class="fn">step</span>()              <span class="cm"># update weights</span></pre>
+    <ul class="bullets anim-up d3" style="max-width:680px">
+      <li><strong>.backward()</strong> traces the computation graph back through softmax, matmul, all three projections</li>
+      <li><strong>W_q, W_k, W_v</strong> each get a gradient — the model learns <em>what to query</em>, <em>what to key</em>, and <em>what to pass as value</em></li>
+      <li>In the full model, the loss is <strong style="color:var(--c)">cross-entropy on next-token prediction</strong> — not a dummy loss</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 22 · SAVING WEIGHTS
+═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s22">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:20px;max-width:860px;width:100%">
+    <div class="tag green">Checkpointing</div>
+    <h2 class="anim-up d1">Saving QKV Weights</h2>
+    <pre data-file="SELF_ATTENTION.py" class="anim-up d2" style="font-size:.82rem">
+<span class="kw">import</span> os
+
+os.<span class="fn">makedirs</span>(<span class="st">"Attention Weights"</span>, exist_ok=<span class="kw">True</span>)
+torch.<span class="fn">save</span>(
+    {
+        <span class="st">"W_query"</span>: attn.W_query.<span class="fn">state_dict</span>(),
+        <span class="st">"W_key"</span>  : attn.W_key.<span class="fn">state_dict</span>(),
+        <span class="st">"W_value"</span>: attn.W_value.<span class="fn">state_dict</span>(),
+    },
+    <span class="st">"Attention Weights/self_attention_weights.pt"</span>,
+)</pre>
+    <div class="cards-row anim-up d3">
+      <div class="card" style="min-width:200px;border-color:rgba(16,185,129,.3)">
+        <div style="font-size:.75rem;color:var(--g);font-weight:600;margin-bottom:6px">.state_dict()</div>
+        <p style="font-size:.82rem">Returns an OrderedDict of tensor name → tensor. The canonical PyTorch way to save weights.</p>
+      </div>
+      <div class="card" style="min-width:200px;border-color:rgba(34,211,238,.3)">
+        <div style="font-size:.75rem;color:var(--c);font-weight:600;margin-bottom:6px">torch.save</div>
+        <p style="font-size:.82rem">Serialises any Python object (dicts, tensors) using Python's pickle + zip format.</p>
+      </div>
+      <div class="card" style="min-width:200px;border-color:rgba(99,102,241,.3)">
+        <div style="font-size:.75rem;color:var(--i);font-weight:600;margin-bottom:6px">torch.load</div>
+        <p style="font-size:.82rem">Restore with <code style="color:var(--i)">model.load_state_dict(torch.load(path))</code></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 23 · SUMMARY
+═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s23">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:22px;max-width:820px;width:100%">
+    <div class="tag green">Summary</div>
+    <h2 class="anim-up d1">Day 0 Recap</h2>
+    <div class="cards-row anim-up d2">
+      <div class="card" style="border-color:rgba(34,211,238,.3);flex:1;min-width:220px">
+        <div style="font-size:.75rem;color:var(--c);font-weight:600;margin-bottom:10px;letter-spacing:.08em">TOKENIZATION_AND_EMBEDDING.py</div>
+        <ul class="bullets" style="gap:8px">
+          <li style="font-size:.82rem">tiktoken BPE tokenizer</li>
+          <li style="font-size:.82rem">Sliding window dataset</li>
+          <li style="font-size:.82rem">Token + positional embeddings</li>
+          <li style="font-size:.82rem">Shape: <code>(B, T, 256)</code></li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:rgba(139,92,246,.3);flex:1;min-width:220px">
+        <div style="font-size:.75rem;color:var(--v);font-weight:600;margin-bottom:10px;letter-spacing:.08em">SELF_ATTENTION.py</div>
+        <ul class="bullets" style="gap:8px">
+          <li style="font-size:.82rem">Q, K, V linear projections</li>
+          <li style="font-size:.82rem">Scaled dot-product attention</li>
+          <li style="font-size:.82rem">Softmax attention weights</li>
+          <li style="font-size:.82rem">Context vectors + backprop</li>
+        </ul>
+      </div>
+    </div>
+    <div class="math anim-up d3">
+      Attention(<span class="part mq">Q</span>,<span class="part mk">K</span>,<span class="part mv">V</span>) = softmax( <span class="part mq">Q</span><span class="part mk">K</span><sup>T</sup> / <span class="part md">√d</span> ) · <span class="part mv">V</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SLIDE 24 · NEXT SESSION
+═══════════════════════════════════════════════════════ -->
+<div class="slide" id="s24">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:22px;max-width:820px;width:100%">
+    <div class="tag" style="color:var(--v);background:rgba(139,92,246,.12);border-color:rgba(139,92,246,.3)">Coming Next</div>
+    <h2 class="anim-up d1">Day 1 Preview</h2>
+    <div class="prereq-grid anim-up d2">
+      <div class="prereq-card" style="border-color:rgba(99,102,241,.3)">
+        <div class="ico">🔢</div>
+        <h4>Multi-Head Attention</h4>
+        <p>Split Q,K,V into H heads, run attention in parallel, concatenate &amp; project</p>
+      </div>
+      <div class="prereq-card" style="border-color:rgba(244,63,94,.3)">
+        <div class="ico">🎭</div>
+        <h4>Masked Attention</h4>
+        <p>Causal mask — tokens can only look backwards, not at future tokens</p>
+      </div>
+      <div class="prereq-card" style="border-color:rgba(16,185,129,.3)">
+        <div class="ico">⚡</div>
+        <h4>Feed-Forward Block</h4>
+        <p>Position-wise 2-layer MLP with GELU — expands then contracts d_model</p>
+      </div>
+      <div class="prereq-card" style="border-color:rgba(245,158,11,.3)">
+        <div class="ico">🏗️</div>
+        <h4>Transformer Block</h4>
+        <p>LayerNorm → MaskedMHA → residual → LayerNorm → FFN → residual</p>
+      </div>
+    </div>
+    <p class="anim-up d3" style="font-size:.88rem;color:var(--tx3)">Files: <code>blocks/MULTI_HEAD_ATTENTION.py</code> · <code>blocks/MASKED_ATTENTION.py</code> · <code>blocks/FEED_FORWARD.py</code> · <code>TRANSFORMER.py</code></p>
+  </div>
+</div>
+
+</div><!-- end #deck -->
+
+<!-- ── Navigation ── -->
+<nav id="nav">
+  <button class="nav-btn" id="prev" title="Previous (←)">&#8592;</button>
+  <div id="progress"><div id="bar"></div></div>
+  <span id="counter">1 / 24</span>
+  <button class="nav-btn" id="next" title="Next (→)">&#8594;</button>
+</nav>
+
+<script>
+const TOTAL = 24;
+let cur = 1;
+
+// ── Canvas background particles ──────────────────────────────────────────────
+const canvas = document.getElementById('bg');
+const ctx    = canvas.getContext('2d');
+let W, H, dots = [];
+function resize(){
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+function initDots(){
+  dots = Array.from({length:60},()=>({
+    x:Math.random()*W, y:Math.random()*H,
+    r:Math.random()*1.5+.3,
+    vx:(Math.random()-.5)*.3, vy:(Math.random()-.5)*.3,
+    a:Math.random()*.4+.05
+  }));
+}
+function frame(){
+  ctx.clearRect(0,0,W,H);
+  dots.forEach(d=>{
+    d.x+=d.vx; d.y+=d.vy;
+    if(d.x<0||d.x>W) d.vx*=-1;
+    if(d.y<0||d.y>H) d.vy*=-1;
+    ctx.beginPath();
+    ctx.arc(d.x,d.y,d.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(99,102,241,${d.a})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(frame);
+}
+resize(); initDots(); frame();
+window.addEventListener('resize',()=>{resize();initDots()});
+
+// ── Slide navigation ──────────────────────────────────────────────────────────
+const TRANS = 'transform .55s cubic-bezier(.77,0,.18,1)';
+function go(n){
+  if(n<1||n>TOTAL||n===cur) return;
+  const oldEl = document.getElementById('s'+cur);
+  const newEl = document.getElementById('s'+n);
+  if(!oldEl||!newEl) return;
+  const fwd = n > cur;
+
+  // Position new slide off-screen instantly (no transition)
+  newEl.style.transition = 'none';
+  newEl.style.transform  = fwd ? 'translateX(100%)' : 'translateX(-100%)';
+  newEl.style.opacity    = '1';
+  newEl.classList.add('active');
+  void newEl.offsetWidth; // force reflow so the above takes effect before we re-enable transition
+
+  // Animate both slides
+  newEl.style.transition = TRANS;
+  newEl.style.transform  = 'translateX(0)';
+  oldEl.style.transition = TRANS;
+  oldEl.style.transform  = fwd ? 'translateX(-100%)' : 'translateX(100%)';
+
+  // Reset anims on old slide immediately
+  oldEl.querySelectorAll('.anim-up,.anim-in,.anim-scale').forEach(el=>{
+    el.style.animation='none';
+  });
+
+  // Re-trigger entrance anims on new slide
+  newEl.querySelectorAll('.anim-up,.anim-in,.anim-scale').forEach(el=>{
+    const cls = el.classList.contains('anim-scale')?'scaleIn':
+                el.classList.contains('anim-in')?'fadeIn':'fadeUp';
+    el.style.animation='none'; void el.offsetWidth;
+    const delay = [...el.classList].find(c=>c.startsWith('d'));
+    const ms = delay? parseInt(delay.replace('d',''))*100 : 0;
+    el.style.animation=`${cls} .6s ${ms}ms ease both`;
+  });
+
+  cur = n;
+  document.getElementById('counter').textContent = cur+' / '+TOTAL;
+  document.getElementById('bar').style.width = ((cur/TOTAL)*100)+'%';
+  document.getElementById('slide-num').textContent = 'Slide '+cur;
+  onSlide(cur);
+
+  // Cleanup old slide after transition completes
+  setTimeout(()=>{
+    oldEl.classList.remove('active');
+    oldEl.style.transition = '';
+    oldEl.style.transform  = '';
+    oldEl.style.opacity    = '';
+    newEl.style.transition = '';
+    newEl.style.transform  = '';
+  }, 570);
+}
+
+document.getElementById('next').onclick = ()=>go(cur+1);
+document.getElementById('prev').onclick = ()=>go(cur-1);
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' ') go(cur+1);
+  if(e.key==='ArrowLeft')  go(cur-1);
+});
+// Touch swipe
+let tx=0;
+document.addEventListener('touchstart',e=>tx=e.touches[0].clientX);
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  if(dx<-50) go(cur+1);
+  if(dx>50)  go(cur-1);
+});
+
+// ── Slide-specific animations ─────────────────────────────────────────────────
+function onSlide(n){
+  if(n===5)  animPipeline();
+  if(n===7)  animTokens();
+  if(n===10) animWindow();
+  if(n===12) animEmbBars();
+  if(n===18) animQKV();
+  if(n===20) animHeatmap();
+}
+
+// Pipeline
+function animPipeline(){
+  document.querySelectorAll('.pipe-step').forEach((el,i)=>{
+    setTimeout(()=>el.classList.add('show'),i*120);
+  });
+}
+
+// Token animation
+function animTokens(){
+  document.querySelectorAll('#tok-row .tok').forEach((el,i)=>{
+    setTimeout(()=>el.classList.add('show'),i*150);
+  });
+  setTimeout(()=>{
+    document.querySelectorAll('#id-row .tid').forEach((el,i)=>{
+      setTimeout(()=>el.classList.add('show'),i*100);
+    });
+  },900);
+}
+
+// Sliding window
+const WIN_LEN=4, TOTAL_TOKS=10;
+let winOffset=0, winTimer=null;
+function animWindow(){
+  const seq = document.getElementById('win-seq');
+  const lbl = document.getElementById('win-info');
+  if(!seq) return;
+  seq.innerHTML='';
+  for(let i=0;i<TOTAL_TOKS;i++){
+    const d=document.createElement('div');
+    d.className='wbox'; d.id='wb'+i;
+    d.textContent='t'+i;
+    seq.appendChild(d);
+  }
+  winOffset=0;
+  clearInterval(winTimer);
+  updateWindow();
+  winTimer=setInterval(()=>{
+    winOffset=(winOffset+1)%(TOTAL_TOKS-WIN_LEN);
+    updateWindow();
+  },1200);
+}
+function updateWindow(){
+  const lbl=document.getElementById('win-info');
+  for(let i=0;i<TOTAL_TOKS;i++){
+    const el=document.getElementById('wb'+i);
+    if(!el) return;
+    el.classList.remove('inp','tgt');
+    if(i>=winOffset && i<winOffset+WIN_LEN) el.classList.add('inp');
+    else if(i>=winOffset+1 && i<winOffset+WIN_LEN+1) el.classList.add('tgt');
+  }
+  if(lbl) lbl.textContent='input: t'+winOffset+'…t'+(winOffset+WIN_LEN-1)+'  →  target: t'+(winOffset+1)+'…t'+(winOffset+WIN_LEN);
+}
+
+// Embedding bars
+function animEmbBars(){
+  const c=document.getElementById('emb-bars');
+  if(!c) return;
+  c.innerHTML='';
+  const vals=Array.from({length:20},()=>Math.random());
+  vals.forEach((v,i)=>{
+    const b=document.createElement('div');
+    b.className='emb-bar';
+    b.style.height='4px';
+    c.appendChild(b);
+    setTimeout(()=>{ b.style.height=(v*54+4)+'px'; },i*30+200);
+  });
+}
+
+// QKV animation
+function animQKV(){
+  ['qmat-q','qmat-k','qmat-v'].forEach((id,i)=>{
+    setTimeout(()=>{
+      const el=document.getElementById(id);
+      if(el) el.classList.add('show');
+    },i*200+300);
+  });
+  ['op1','op2','op3','op4'].forEach((id,i)=>{
+    setTimeout(()=>{
+      const el=document.getElementById(id);
+      if(el) el.classList.add('show');
+    },i*200+1100);
+  });
+}
+
+// Attention heatmap
+const HEAT_TOKENS=['The','solar','panel','con-'];
+const HEAT_DATA=[
+  [0.55, 0.22, 0.14, 0.09],
+  [0.18, 0.48, 0.21, 0.13],
+  [0.12, 0.27, 0.44, 0.17],
+  [0.08, 0.19, 0.25, 0.48],
+];
+function animHeatmap(){
+  const hm=document.getElementById('heatmap');
+  if(!hm) return;
+  hm.innerHTML='';
+  HEAT_DATA.forEach((row,ri)=>{
+    const rowDiv=document.createElement('div');
+    rowDiv.className='hm-row';
+    const lbl=document.createElement('div');
+    lbl.className='hm-label';
+    lbl.style.cssText='font-size:.7rem;color:var(--tx3);width:52px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-family:JetBrains Mono,monospace';
+    lbl.textContent=HEAT_TOKENS[ri];
+    rowDiv.appendChild(lbl);
+    row.forEach((v,ci)=>{
+      const cell=document.createElement('div');
+      cell.className='hm-cell';
+      cell.textContent=v.toFixed(2);
+      cell.style.background='rgba(0,0,0,0)';
+      cell.style.color='var(--tx3)';
+      cell.style.border='1px solid var(--border)';
+      rowDiv.appendChild(cell);
+      setTimeout(()=>{
+        const a=Math.round(v*220);
+        cell.style.background=`rgba(99,102,241,${v*.85})`;
+        cell.style.color=v>0.3?'#fff':'var(--tx2)';
+      },(ri*4+ci)*80+400);
+    });
+    hm.appendChild(rowDiv);
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+document.getElementById('bar').style.width = ((1/TOTAL)*100)+'%';
+document.getElementById('slide-num').textContent = 'Slide 1';
+onSlide(1);
+</script>
+</body>
+</html>
