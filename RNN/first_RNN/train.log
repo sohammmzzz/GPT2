@@ -1,0 +1,334 @@
+[train] device: cuda
+[data] using cached corpus: C:\Users\soham\OneDrive\Desktop\Work Solar\Self learning\Foundation_models\first_llm\RNN\first_RNN\data\corpus.txt
+[data] corpus chars: 8,029,901 | vocab size: 118
+[data] train tokens: 7,226,911 | val tokens: 802,990
+[model] LSTM | 3 layers x 512 hidden | 5.87M params
+[train] steps/epoch: 441 | total steps: 8820
+epoch  1 | step     50/8820 | lr 7.50e-04 | loss 3.8359 | ppl   46.33 | 225k tok/s
+epoch  1 | step    100/8820 | lr 1.50e-03 | loss 3.1602 | ppl   23.57 | 246k tok/s
+epoch  1 | step    150/8820 | lr 2.25e-03 | loss 2.9450 | ppl   19.01 | 252k tok/s
+epoch  1 | step    200/8820 | lr 3.00e-03 | loss 2.3926 | ppl   10.94 | 254k tok/s
+epoch  1 | step    250/8820 | lr 3.00e-03 | loss 2.0698 | ppl    7.92 | 256k tok/s
+epoch  1 | step    300/8820 | lr 3.00e-03 | loss 1.8824 | ppl    6.57 | 257k tok/s
+epoch  1 | step    350/8820 | lr 3.00e-03 | loss 1.7556 | ppl    5.79 | 258k tok/s
+epoch  1 | step    400/8820 | lr 3.00e-03 | loss 1.6666 | ppl    5.29 | 256k tok/s
+epoch  2 | step    450/8820 | lr 2.99e-03 | loss 1.6065 | ppl    4.99 | 254k tok/s
+epoch  2 | step    500/8820 | lr 2.99e-03 | loss 1.5568 | ppl    4.74 | 255k tok/s
+  -> val loss 1.5232 | val ppl 4.59
+[ckpt] saved best (val_loss=1.5232) -> C:\Users\soham\OneDrive\Desktop\Work Solar\Self learning\Foundation_models\first_llm\RNN\first_RNN\checkpoints\best.pt
+  --- sample ---
+    The thought the askness
+    about forgustened room or the out of a rull crove at she could he know will doon for a way of the room
+    in his turning, and that he had turning to me. I am circudiced the
+    was a
+    necessed
+    such into the pitter and county of 
+  --------------
+epoch  2 | step    550/8820 | lr 2.99e-03 | loss 1.5236 | ppl    4.59 | 231k tok/s
+epoch  2 | step    600/8820 | lr 2.99e-03 | loss 1.4908 | ppl    4.44 | 233k tok/s
+epoch  2 | step    650/8820 | lr 2.98e-03 | loss 1.4669 | ppl    4.34 | 236k tok/s
+epoch  2 | step    700/8820 | lr 2.98e-03 | loss 1.4442 | ppl    4.24 | 238k tok/s
+epoch  2 | step    750/8820 | lr 2.97e-03 | loss 1.4304 | ppl    4.18 | 240k tok/s
+epoch  2 | step    800/8820 | lr 2.97e-03 | loss 1.4120 | ppl    4.10 | 242k tok/s
+epoch  2 | step    850/8820 | lr 2.96e-03 | loss 1.3968 | ppl    4.04 | 243k tok/s
+epoch  3 | step    900/8820 | lr 2.96e-03 | loss 1.3900 | ppl    4.01 | 244k tok/s
+epoch  3 | step    950/8820 | lr 2.95e-03 | loss 1.3787 | ppl    3.97 | 244k tok/s
+epoch  3 | step   1000/8820 | lr 2.94e-03 | loss 1.3698 | ppl    3.93 | 246k tok/s
+  -> val loss 1.3715 | val ppl 3.94
+[ckpt] saved best (val_loss=1.3715) -> C:\Users\soham\OneDrive\Desktop\Work Solar\Self learning\Foundation_models\first_llm\RNN\first_RNN\checkpoints\best.pt
+  --- sample ---
+    The dresses with this sort of heart. A regular among the children began to be distropped to content with some work before me; it was not in my sister. It was not such a little feeling in her own to-day.
+    
+    “Who has as host not to see you.”
+    
+    “Well
+  --------------
+epoch  3 | step   1050/8820 | lr 2.94e-03 | loss 1.3598 | ppl    3.90 | 231k tok/s
+epoch  3 | step   1100/8820 | lr 2.93e-03 | loss 1.3529 | ppl    3.87 | 228k tok/s
+epoch  3 | step   1150/8820 | lr 2.92e-03 | loss 1.3416 | ppl    3.83 | 226k tok/s
+epoch  3 | step   1200/8820 | lr 2.91e-03 | loss 1.3313 | ppl    3.79 | 223k tok/s
+epoch  3 | step   1250/8820 | lr 2.90e-03 | loss 1.3234 | ppl    3.76 | 221k tok/s
+epoch  3 | step   1300/8820 | lr 2.89e-03 | loss 1.3149 | ppl    3.72 | 219k tok/s
+epoch  4 | step   1350/8820 | lr 2.88e-03 | loss 1.3075 | ppl    3.70 | 219k tok/s
+epoch  4 | step   1400/8820 | lr 2.87e-03 | loss 1.3056 | ppl    3.69 | 218k tok/s
+epoch  4 | step   1450/8820 | lr 2.86e-03 | loss 1.2898 | ppl    3.63 | 216k tok/s
+epoch  4 | step   1500/8820 | lr 2.85e-03 | loss 1.2877 | ppl    3.62 | 215k tok/s
+  -> val loss 1.3131 | val ppl 3.72
+[ckpt] saved best (val_loss=1.3131) -> C:\Users\soham\OneDrive\Desktop\Work Solar\Self learning\Foundation_models\first_llm\RNN\first_RNN\checkpoints\best.pt
+  --- sample ---
+    The works were of demand of that place in
+    that time to be heard. The house he he had seen him to be completely
+    fearful to without fields, and kept, was sent on, both to and starting out of a
+    paper and sat at the being the scene of the shower-bo
+  --------------
+epoch  4 | step   1550/8820 | lr 2.84e-03 | loss 1.2831 | ppl    3.61 | 209k tok/s
+epoch  4 | step   1600/8820 | lr 2.83e-03 | loss 1.2832 | ppl    3.61 | 208k tok/s
+epoch  4 | step   1650/8820 | lr 2.82e-03 | loss 1.2757 | ppl    3.58 | 207k tok/s
+epoch  4 | step   1700/8820 | lr 2.80e-03 | loss 1.2762 | ppl    3.58 | 206k tok/s
+epoch  4 | step   1750/8820 | lr 2.79e-03 | loss 1.2672 | ppl    3.55 | 205k tok/s
+epoch  5 | step   1800/8820 | lr 2.78e-03 | loss 1.2677 | ppl    3.55 | 204k tok/s
+epoch  5 | step   1850/8820 | lr 2.76e-03 | loss 1.2591 | ppl    3.52 | 203k tok/s
+epoch  5 | step   1900/8820 | lr 2.75e-03 | loss 1.2545 | ppl    3.51 | 203k tok/s
+epoch  5 | step   1950/8820 | lr 2.73e-03 | loss 1.2534 | ppl    3.50 | 202k tok/s
+epoch  5 | step   2000/8820 | lr 2.72e-03 | loss 1.2513 | ppl    3.49 | 201k tok/s
+  -> val loss 1.2847 | val ppl 3.61
+[ckpt] saved best (val_loss=1.2847) -> C:\Users\soham\OneDrive\Desktop\Work Solar\Self learning\Foundation_models\first_llm\RNN\first_RNN\checkpoints\best.pt
+  --- sample ---
+    The entry in the clock-steps and his arms; while we were broken, and burning
+    as I was Miss Pross as we were going, and no four way with his own bed. The
+    Professor had never hung to see Mr. Rochester to be the rail of the best
+    way. So I went dow
+  --------------
+epoch  5 | step   2050/8820 | lr 2.70e-03 | loss 1.2460 | ppl    3.48 | 198k tok/s
+epoch  5 | step   2100/8820 | lr 2.69e-03 | loss 1.2421 | ppl    3.46 | 197k tok/s
+epoch  5 | step   2150/8820 | lr 2.67e-03 | loss 1.2448 | ppl    3.47 | 197k tok/s
+epoch  5 | step   2200/8820 | lr 2.66e-03 | loss 1.2368 | ppl    3.44 | 197k tok/s
+epoch  6 | step   2250/8820 | lr 2.64e-03 | loss 1.2376 | ppl    3.45 | 196k tok/s
+epoch  6 | step   2300/8820 | lr 2.62e-03 | loss 1.2323 | ppl    3.43 | 196k tok/s
+epoch  6 | step   2350/8820 | lr 2.61e-03 | loss 1.2334 | ppl    3.43 | 196k tok/s
+epoch  6 | step   2400/8820 | lr 2.59e-03 | loss 1.2312 | ppl    3.43 | 196k tok/s
+epoch  6 | step   2450/8820 | lr 2.57e-03 | loss 1.2296 | ppl    3.42 | 195k tok/s
+epoch  6 | step   2500/8820 | lr 2.55e-03 | loss 1.2280 | ppl    3.41 | 195k tok/s
+  -> val loss 1.2703 | val ppl 3.56
+[ckpt] saved best (val_loss=1.2703) -> C:\Users\soham\OneDrive\Desktop\Work Solar\Self learning\Foundation_models\first_llm\RNN\first_RNN\checkpoints\best.pt
+  --- sample ---
+    The early arms of the doctor. “In an easy way.
+    
+    My blessed to-day he had intelligent that it was quite uneasy, and the fire was
+    going to small life in its departure into my children. I was unlikely and
+    that what I was then surprised to take it 
+  --------------
+epoch  6 | step   2550/8820 | lr 2.53e-03 | loss 1.2265 | ppl    3.41 | 192k tok/s
+epoch  6 | step   2600/8820 | lr 2.52e-03 | loss 1.2248 | ppl    3.40 | 192k tok/s
+epoch  7 | step   2650/8820 | lr 2.50e-03 | loss 1.2216 | ppl    3.39 | 192k tok/s
+epoch  7 | step   2700/8820 | lr 2.48e-03 | loss 1.2153 | ppl    3.37 | 192k tok/s
+epoch  7 | step   2750/8820 | lr 2.46e-03 | loss 1.2155 | ppl    3.37 | 191k tok/s
+epoch  7 | step   2800/8820 | lr 2.44e-03 | loss 1.2142 | ppl    3.37 | 191k tok/s
+epoch  7 | step   2850/8820 | lr 2.42e-03 | loss 1.2122 | ppl    3.36 | 191k tok/s
+epoch  7 | step   2900/8820 | lr 2.40e-03 | loss 1.2096 | ppl    3.35 | 190k tok/s
+epoch  7 | step   2950/8820 | lr 2.38e-03 | loss 1.2112 | ppl    3.36 | 190k tok/s
+epoch  7 | step   3000/8820 | lr 2.36e-03 | loss 1.2039 | ppl    3.33 | 190k tok/s
+  -> val loss 1.2598 | val ppl 3.52
+[ckpt] saved best (val_loss=1.2598) -> C:\Users\soham\OneDrive\Desktop\Work Solar\Self learning\Foundation_models\first_llm\RNN\first_RNN\checkpoints\best.pt
+  --- sample ---
+    The other warning with a
+    signer. We both sings to the water. But I had taken off its bow of
+    command at all, the poor glance on my hammer came about his hands in his
+    heart.
+    
+    “I am not otherwise observed, and I cannot have been succeeded. It was 
+  --------------
+epoch  7 | step   3050/8820 | lr 2.34e-03 | loss 1.2057 | ppl    3.34 | 188k tok/s
+epoch  8 | step   3100/8820 | lr 2.31e-03 | loss 1.2073 | ppl    3.34 | 189k tok/s
+epoch  8 | step   3150/8820 | lr 2.29e-03 | loss 1.1979 | ppl    3.31 | 190k tok/s
+epoch  8 | step   3200/8820 | lr 2.27e-03 | loss 1.2042 | ppl    3.33 | 190k tok/s
+epoch  8 | step   3250/8820 | lr 2.25e-03 | loss 1.2001 | ppl    3.32 | 190k tok/s
+epoch  8 | step   3300/8820 | lr 2.23e-03 | loss 1.1997 | ppl    3.32 | 190k tok/s
+epoch  8 | step   3350/8820 | lr 2.20e-03 | loss 1.1996 | ppl    3.32 | 190k tok/s
+epoch  8 | step   3400/8820 | lr 2.18e-03 | loss 1.1971 | ppl    3.31 | 191k tok/s
+epoch  8 | step   3450/8820 | lr 2.16e-03 | loss 1.1939 | ppl    3.30 | 191k tok/s
+epoch  8 | step   3500/8820 | lr 2.14e-03 | loss 1.1932 | ppl    3.30 | 192k tok/s
+  -> val loss 1.2429 | val ppl 3.47
+[ckpt] saved best (val_loss=1.2429) -> C:\Users\soham\OneDrive\Desktop\Work Solar\Self learning\Foundation_models\first_llm\RNN\first_RNN\checkpoints\best.pt
+  --- sample ---
+    The boat passed towards the sea. They had
+    trembled, and the pain was almost in the wurl, so that we didn’t seem
+    to tell him if they was got on.
+    
+    “Oh, do you like the smell of the forge on the sea whaling doctors?” he
+    answered, “Oh, the same res
+  --------------
+epoch  9 | step   3550/8820 | lr 2.11e-03 | loss 1.1934 | ppl    3.30 | 191k tok/s
+epoch  9 | step   3600/8820 | lr 2.09e-03 | loss 1.1918 | ppl    3.29 | 192k tok/s
+epoch  9 | step   3650/8820 | lr 2.07e-03 | loss 1.1890 | ppl    3.28 | 192k tok/s
+epoch  9 | step   3700/8820 | lr 2.04e-03 | loss 1.1912 | ppl    3.29 | 192k tok/s
+epoch  9 | step   3750/8820 | lr 2.02e-03 | loss 1.1852 | ppl    3.27 | 192k tok/s
+epoch  9 | step   3800/8820 | lr 2.00e-03 | loss 1.1869 | ppl    3.28 | 193k tok/s
+epoch  9 | step   3850/8820 | lr 1.97e-03 | loss 1.1815 | ppl    3.26 | 193k tok/s
+epoch  9 | step   3900/8820 | lr 1.95e-03 | loss 1.1782 | ppl    3.25 | 193k tok/s
+epoch  9 | step   3950/8820 | lr 1.92e-03 | loss 1.1838 | ppl    3.27 | 194k tok/s
+epoch 10 | step   4000/8820 | lr 1.90e-03 | loss 1.1788 | ppl    3.25 | 194k tok/s
+  -> val loss 1.2385 | val ppl 3.45
+[ckpt] saved best (val_loss=1.2385) -> C:\Users\soham\OneDrive\Desktop\Work Solar\Self learning\Foundation_models\first_llm\RNN\first_RNN\checkpoints\best.pt
+  --- sample ---
+    The paper had the least so solitary, and as if it be
+    vainly fixed me and rapsed into his hand, and the pleasant look of a
+    date’s blood. Everything could be the last to be content. They would have
+    sent the trace of the white problems of the fath
+  --------------
+epoch 10 | step   4050/8820 | lr 1.88e-03 | loss 1.1795 | ppl    3.25 | 193k tok/s
+epoch 10 | step   4100/8820 | lr 1.85e-03 | loss 1.1837 | ppl    3.27 | 193k tok/s
+epoch 10 | step   4150/8820 | lr 1.83e-03 | loss 1.1789 | ppl    3.25 | 193k tok/s
+epoch 10 | step   4200/8820 | lr 1.80e-03 | loss 1.1783 | ppl    3.25 | 194k tok/s
+epoch 10 | step   4250/8820 | lr 1.78e-03 | loss 1.1767 | ppl    3.24 | 194k tok/s
+epoch 10 | step   4300/8820 | lr 1.75e-03 | loss 1.1702 | ppl    3.22 | 195k tok/s
+epoch 10 | step   4350/8820 | lr 1.73e-03 | loss 1.1705 | ppl    3.22 | 195k tok/s
+epoch 10 | step   4400/8820 | lr 1.70e-03 | loss 1.1704 | ppl    3.22 | 196k tok/s
+epoch 11 | step   4450/8820 | lr 1.68e-03 | loss 1.1705 | ppl    3.22 | 197k tok/s
+epoch 11 | step   4500/8820 | lr 1.66e-03 | loss 1.1668 | ppl    3.21 | 197k tok/s
+  -> val loss 1.2406 | val ppl 3.46
+  --- sample ---
+    The back that was so much blue silent.
+    
+    “I think he has. I don’t know all he says. We don’t like the main. I
+    should send it oak, so I’ve called in Defarge to make me the better letter
+    there. In his mouth she told me he was not so desolate, that
+  --------------
+epoch 11 | step   4550/8820 | lr 1.63e-03 | loss 1.1653 | ppl    3.21 | 197k tok/s
+epoch 11 | step   4600/8820 | lr 1.61e-03 | loss 1.1661 | ppl    3.21 | 197k tok/s
+epoch 11 | step   4650/8820 | lr 1.58e-03 | loss 1.1641 | ppl    3.20 | 198k tok/s
+epoch 11 | step   4700/8820 | lr 1.56e-03 | loss 1.1599 | ppl    3.19 | 198k tok/s
+epoch 11 | step   4750/8820 | lr 1.53e-03 | loss 1.1594 | ppl    3.19 | 199k tok/s
+epoch 11 | step   4800/8820 | lr 1.51e-03 | loss 1.1614 | ppl    3.19 | 199k tok/s
+epoch 11 | step   4850/8820 | lr 1.48e-03 | loss 1.1594 | ppl    3.19 | 199k tok/s
+epoch 12 | step   4900/8820 | lr 1.46e-03 | loss 1.1600 | ppl    3.19 | 200k tok/s
+epoch 12 | step   4950/8820 | lr 1.43e-03 | loss 1.1567 | ppl    3.18 | 200k tok/s
+epoch 12 | step   5000/8820 | lr 1.41e-03 | loss 1.1537 | ppl    3.17 | 201k tok/s
+  -> val loss 1.2322 | val ppl 3.43
+[ckpt] saved best (val_loss=1.2322) -> C:\Users\soham\OneDrive\Desktop\Work Solar\Self learning\Foundation_models\first_llm\RNN\first_RNN\checkpoints\best.pt
+  --- sample ---
+    The old chapel was examined, but not admorified that, that I had remained to
+    have risen from the lines of my influence. Sometimes I felt that my
+    look and mind made no such a ship at its nature. Nothing but stood
+    being allowed to defend him with
+  --------------
+epoch 12 | step   5050/8820 | lr 1.39e-03 | loss 1.1542 | ppl    3.17 | 200k tok/s
+epoch 12 | step   5100/8820 | lr 1.36e-03 | loss 1.1551 | ppl    3.17 | 201k tok/s
+epoch 12 | step   5150/8820 | lr 1.34e-03 | loss 1.1548 | ppl    3.17 | 201k tok/s
+epoch 12 | step   5200/8820 | lr 1.31e-03 | loss 1.1503 | ppl    3.16 | 202k tok/s
+epoch 12 | step   5250/8820 | lr 1.29e-03 | loss 1.1544 | ppl    3.17 | 202k tok/s
+epoch 13 | step   5300/8820 | lr 1.27e-03 | loss 1.1511 | ppl    3.16 | 202k tok/s
+epoch 13 | step   5350/8820 | lr 1.24e-03 | loss 1.1470 | ppl    3.15 | 203k tok/s
+epoch 13 | step   5400/8820 | lr 1.22e-03 | loss 1.1499 | ppl    3.16 | 203k tok/s
+epoch 13 | step   5450/8820 | lr 1.20e-03 | loss 1.1464 | ppl    3.15 | 204k tok/s
+epoch 13 | step   5500/8820 | lr 1.17e-03 | loss 1.1471 | ppl    3.15 | 204k tok/s
+  -> val loss 1.2234 | val ppl 3.40
+[ckpt] saved best (val_loss=1.2234) -> C:\Users\soham\OneDrive\Desktop\Work Solar\Self learning\Foundation_models\first_llm\RNN\first_RNN\checkpoints\best.pt
+  --- sample ---
+    The Parsee, where it was
+    almost home—mostly charged by the forest as I could, and it was not a good
+    cloud and a great interest with a change. It was not my being my regard
+    upon the fire in the boys; the weight of something she had expressed the
+  --------------
+epoch 13 | step   5550/8820 | lr 1.15e-03 | loss 1.1406 | ppl    3.13 | 203k tok/s
+epoch 13 | step   5600/8820 | lr 1.13e-03 | loss 1.1408 | ppl    3.13 | 204k tok/s
+epoch 13 | step   5650/8820 | lr 1.11e-03 | loss 1.1435 | ppl    3.14 | 204k tok/s
+epoch 13 | step   5700/8820 | lr 1.08e-03 | loss 1.1417 | ppl    3.13 | 205k tok/s
+epoch 14 | step   5750/8820 | lr 1.06e-03 | loss 1.1405 | ppl    3.13 | 205k tok/s
+epoch 14 | step   5800/8820 | lr 1.04e-03 | loss 1.1401 | ppl    3.13 | 205k tok/s
+epoch 14 | step   5850/8820 | lr 1.02e-03 | loss 1.1367 | ppl    3.12 | 206k tok/s
+epoch 14 | step   5900/8820 | lr 9.95e-04 | loss 1.1390 | ppl    3.12 | 206k tok/s
+epoch 14 | step   5950/8820 | lr 9.74e-04 | loss 1.1348 | ppl    3.11 | 206k tok/s
+epoch 14 | step   6000/8820 | lr 9.53e-04 | loss 1.1331 | ppl    3.11 | 206k tok/s
+  -> val loss 1.2229 | val ppl 3.40
+[ckpt] saved best (val_loss=1.2229) -> C:\Users\soham\OneDrive\Desktop\Work Solar\Self learning\Foundation_models\first_llm\RNN\first_RNN\checkpoints\best.pt
+  --- sample ---
+    The reward is of a
+    _theme_, he saw in the Marquis than this six inches were the boats, and
+    of the Nantucket golden stars and fronts having begun to come from the
+    rope, “Drive up the party, Don, they like the old manner, and certainly
+    _what_ are
+  --------------
+epoch 14 | step   6050/8820 | lr 9.32e-04 | loss 1.1372 | ppl    3.12 | 205k tok/s
+epoch 14 | step   6100/8820 | lr 9.11e-04 | loss 1.1369 | ppl    3.12 | 206k tok/s
+epoch 14 | step   6150/8820 | lr 8.91e-04 | loss 1.1341 | ppl    3.11 | 206k tok/s
+epoch 15 | step   6200/8820 | lr 8.70e-04 | loss 1.1400 | ppl    3.13 | 206k tok/s
+epoch 15 | step   6250/8820 | lr 8.51e-04 | loss 1.1271 | ppl    3.09 | 207k tok/s
+epoch 15 | step   6300/8820 | lr 8.31e-04 | loss 1.1380 | ppl    3.12 | 207k tok/s
+epoch 15 | step   6350/8820 | lr 8.11e-04 | loss 1.1306 | ppl    3.10 | 207k tok/s
+epoch 15 | step   6400/8820 | lr 7.92e-04 | loss 1.1316 | ppl    3.10 | 207k tok/s
+epoch 15 | step   6450/8820 | lr 7.73e-04 | loss 1.1296 | ppl    3.09 | 207k tok/s
+epoch 15 | step   6500/8820 | lr 7.55e-04 | loss 1.1337 | ppl    3.11 | 207k tok/s
+  -> val loss 1.2117 | val ppl 3.36
+[ckpt] saved best (val_loss=1.2117) -> C:\Users\soham\OneDrive\Desktop\Work Solar\Self learning\Foundation_models\first_llm\RNN\first_RNN\checkpoints\best.pt
+  --- sample ---
+    The man formed the gossips and showed them to himself in
+    silence. His gay hand could see the water and beating from his hand with
+    a quarter of a man of his daughter.
+    
+    “Pull his pipe against me. I shall go to small way on with a ship and
+    the peo
+  --------------
+epoch 15 | step   6550/8820 | lr 7.37e-04 | loss 1.1287 | ppl    3.09 | 206k tok/s
+epoch 15 | step   6600/8820 | lr 7.19e-04 | loss 1.1263 | ppl    3.08 | 206k tok/s
+epoch 16 | step   6650/8820 | lr 7.01e-04 | loss 1.1241 | ppl    3.08 | 206k tok/s
+epoch 16 | step   6700/8820 | lr 6.84e-04 | loss 1.1298 | ppl    3.10 | 207k tok/s
+epoch 16 | step   6750/8820 | lr 6.67e-04 | loss 1.1262 | ppl    3.08 | 207k tok/s
+epoch 16 | step   6800/8820 | lr 6.50e-04 | loss 1.1286 | ppl    3.09 | 207k tok/s
+epoch 16 | step   6850/8820 | lr 6.34e-04 | loss 1.1240 | ppl    3.08 | 207k tok/s
+epoch 16 | step   6900/8820 | lr 6.18e-04 | loss 1.1240 | ppl    3.08 | 207k tok/s
+epoch 16 | step   6950/8820 | lr 6.02e-04 | loss 1.1209 | ppl    3.07 | 207k tok/s
+epoch 16 | step   7000/8820 | lr 5.87e-04 | loss 1.1212 | ppl    3.07 | 207k tok/s
+  -> val loss 1.2092 | val ppl 3.35
+[ckpt] saved best (val_loss=1.2092) -> C:\Users\soham\OneDrive\Desktop\Work Solar\Self learning\Foundation_models\first_llm\RNN\first_RNN\checkpoints\best.pt
+  --- sample ---
+    The same lady’s
+    triumph. He was a mark of rooms, and had been commonplaced with a quick and
+    hopeless world, and intricate and many women are not deathly found there
+    was the communication of his anxiety and as he had a fancy indeed. As to
+    my lov
+  --------------
+epoch 16 | step   7050/8820 | lr 5.72e-04 | loss 1.1218 | ppl    3.07 | 206k tok/s
+epoch 17 | step   7100/8820 | lr 5.57e-04 | loss 1.1192 | ppl    3.06 | 206k tok/s
+epoch 17 | step   7150/8820 | lr 5.43e-04 | loss 1.1192 | ppl    3.06 | 206k tok/s
+epoch 17 | step   7200/8820 | lr 5.29e-04 | loss 1.1146 | ppl    3.05 | 205k tok/s
+epoch 17 | step   7250/8820 | lr 5.15e-04 | loss 1.1209 | ppl    3.07 | 205k tok/s
+epoch 17 | step   7300/8820 | lr 5.02e-04 | loss 1.1181 | ppl    3.06 | 205k tok/s
+epoch 17 | step   7350/8820 | lr 4.89e-04 | loss 1.1153 | ppl    3.05 | 205k tok/s
+epoch 17 | step   7400/8820 | lr 4.77e-04 | loss 1.1182 | ppl    3.06 | 205k tok/s
+epoch 17 | step   7450/8820 | lr 4.65e-04 | loss 1.1182 | ppl    3.06 | 205k tok/s
+epoch 18 | step   7500/8820 | lr 4.53e-04 | loss 1.1163 | ppl    3.05 | 205k tok/s
+  -> val loss 1.2086 | val ppl 3.35
+[ckpt] saved best (val_loss=1.2086) -> C:\Users\soham\OneDrive\Desktop\Work Solar\Self learning\Foundation_models\first_llm\RNN\first_RNN\checkpoints\best.pt
+  --- sample ---
+    The Count’s manner was still tormenting
+    me, and she looked up the right hand to the edge of the guard. It was to
+    the presence of the ladies, and I exclaimed her very way before her.
+    “You would not put yourself before that to the floor, to whom 
+  --------------
+epoch 18 | step   7550/8820 | lr 4.42e-04 | loss 1.1162 | ppl    3.05 | 205k tok/s
+epoch 18 | step   7600/8820 | lr 4.31e-04 | loss 1.1136 | ppl    3.05 | 205k tok/s
+epoch 18 | step   7650/8820 | lr 4.21e-04 | loss 1.1153 | ppl    3.05 | 205k tok/s
+epoch 18 | step   7700/8820 | lr 4.11e-04 | loss 1.1141 | ppl    3.05 | 205k tok/s
+epoch 18 | step   7750/8820 | lr 4.02e-04 | loss 1.1119 | ppl    3.04 | 205k tok/s
+epoch 18 | step   7800/8820 | lr 3.92e-04 | loss 1.1118 | ppl    3.04 | 205k tok/s
+epoch 18 | step   7850/8820 | lr 3.84e-04 | loss 1.1098 | ppl    3.03 | 205k tok/s
+epoch 18 | step   7900/8820 | lr 3.75e-04 | loss 1.1127 | ppl    3.04 | 205k tok/s
+epoch 19 | step   7950/8820 | lr 3.67e-04 | loss 1.1148 | ppl    3.05 | 205k tok/s
+epoch 19 | step   8000/8820 | lr 3.60e-04 | loss 1.1125 | ppl    3.04 | 205k tok/s
+  -> val loss 1.2079 | val ppl 3.35
+[ckpt] saved best (val_loss=1.2079) -> C:\Users\soham\OneDrive\Desktop\Work Solar\Self learning\Foundation_models\first_llm\RNN\first_RNN\checkpoints\best.pt
+  --- sample ---
+    The red bad can what sobs; and the
+    ever-chased clean lines, and I will recall them and call them away, and
+    always done anything to stir up there, and who left a long rock by some
+    monstrous rooms.
+    
+    Because I felt that all considerations which co
+  --------------
+epoch 19 | step   8050/8820 | lr 3.53e-04 | loss 1.1086 | ppl    3.03 | 204k tok/s
+epoch 19 | step   8100/8820 | lr 3.46e-04 | loss 1.1144 | ppl    3.05 | 204k tok/s
+epoch 19 | step   8150/8820 | lr 3.40e-04 | loss 1.1082 | ppl    3.03 | 204k tok/s
+epoch 19 | step   8200/8820 | lr 3.34e-04 | loss 1.1109 | ppl    3.04 | 204k tok/s
+epoch 19 | step   8250/8820 | lr 3.29e-04 | loss 1.1086 | ppl    3.03 | 204k tok/s
+epoch 19 | step   8300/8820 | lr 3.24e-04 | loss 1.1098 | ppl    3.03 | 205k tok/s
+epoch 19 | step   8350/8820 | lr 3.20e-04 | loss 1.1043 | ppl    3.02 | 205k tok/s
+epoch 20 | step   8400/8820 | lr 3.16e-04 | loss 1.1086 | ppl    3.03 | 205k tok/s
+epoch 20 | step   8450/8820 | lr 3.12e-04 | loss 1.1107 | ppl    3.04 | 205k tok/s
+epoch 20 | step   8500/8820 | lr 3.09e-04 | loss 1.1130 | ppl    3.04 | 205k tok/s
+  -> val loss 1.2098 | val ppl 3.35
+  --- sample ---
+    The horses sdeaked from the door from his left arm at the
+    table, and was saying him.
+    
+    “Don’t know that, sir?” Alice never drew out, and said remarking that he
+    advanced to his own indignation. Elizabeth had no sooner than usual, and
+    in her atten
+  --------------
+epoch 20 | step   8550/8820 | lr 3.07e-04 | loss 1.1126 | ppl    3.04 | 205k tok/s
+epoch 20 | step   8600/8820 | lr 3.04e-04 | loss 1.1072 | ppl    3.03 | 205k tok/s
+epoch 20 | step   8650/8820 | lr 3.03e-04 | loss 1.1080 | ppl    3.03 | 206k tok/s
+epoch 20 | step   8700/8820 | lr 3.01e-04 | loss 1.1090 | ppl    3.03 | 206k tok/s
+epoch 20 | step   8750/8820 | lr 3.00e-04 | loss 1.1100 | ppl    3.03 | 206k tok/s
+epoch 20 | step   8800/8820 | lr 3.00e-04 | loss 1.1039 | ppl    3.02 | 206k tok/s
+[train] done. final val loss 1.2124 | ppl 3.36
