@@ -1,0 +1,6 @@
+# Install on Colab (free T4) before running train.py:
+#   !pip install -r requirements-colab.txt
+torch
+tiktoken
+datasets        # only needed for --source hf (streaming FineWeb-Edu etc.)
+requests
